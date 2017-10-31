@@ -15,72 +15,77 @@ public class Pathmaker : MonoBehaviour {
 // translate the pseudocode below
 
 //	DECLARE CLASS MEMBER VARIABLES:
+	int counter = 0;
+	float longHallwayNo = 0f;
+	float whatTile;
+	public float myLifetime;
+	public float generateNew;
+	public static int psi = 0;
+	public static int numberofGenerators = 1;
+	public Transform floorPrefab; //assign this in inspector
+	public Transform floorPrefabTwo;
+	public Transform floorPrefabThree;
+	public Transform pathmakerSpherePrefab; //assign this in inspector
 //	Declare a private integer called counter that starts at 0; 		// counter var will track how many floor tiles I've instantiated
 //	Declare a public Transform called floorPrefab, assign the prefab in inspector;
 //	Declare a public Transform called pathmakerSpherePrefab, assign the prefab in inspector; 		// you'll have to make a "pathmakerSphere" prefab later
 
+	void Start () {
+
+		myLifetime = Random.Range (0f, 200f);
+		generateNew = Random.Range (0.90f, 0.99f);
+
+
+	}
 
 	void Update () {
-//		If counter is less than 50, then:
-//			Generate a random number from 0.0f to 1.0f;
-//			If random number is less than 0.25f, then rotate myself 90 degrees;
-//				... Else if number is 0.25f-0.5f, then rotate myself -90 degrees;
-//				... Else if number is 0.99f-1.0f, then instantiate a pathmakerSpherePrefab clone at my current position;
-//			// end elseIf
-
-//			Instantiate a floorPrefab clone at current position;
-//			Move forward ("forward", as in, the direction I'm currently facing) by 5 units;
-//			Increment counter;
-//		Else:
-//			Destroy my game object; 		// self destruct if I've made enough tiles already
+		whatTile = Random.Range (0f, 2.99f);
+		if (psi < 500) {
+			if (counter < 500) {
+				float randNumber = Random.Range (0.0f, 1.0f);
+				if (randNumber < 0.25f - (longHallwayNo / 2)) {
+					transform.Rotate (0f, 90f, 0f);
+					if (longHallwayNo >= 0.2f) {
+						longHallwayNo = 0f;
+					}
+				} else if (randNumber >= 0.25f - (longHallwayNo / 2) && randNumber < 0.5f - longHallwayNo) {
+					transform.Rotate (0f, -90f, 0f);
+					if (longHallwayNo >= 0.2f) {
+						longHallwayNo = 0f;
+					}
+				} else if (randNumber >= generateNew && numberofGenerators <= 4) {
+					Instantiate (pathmakerSpherePrefab, transform.position, Quaternion.identity);
+					numberofGenerators++;
+				} else {
+					longHallwayNo += 0.02f;
+					if (longHallwayNo >= 0.8f) {
+						longHallwayNo = 0f;
+					}
+				}
+				if (whatTile <= 0.99f) {
+					Instantiate (floorPrefab, transform.position, Quaternion.identity);
+				}
+				if (whatTile > 0.99f && whatTile <= 1.99f) {
+					Instantiate (floorPrefabTwo, transform.position, Quaternion.identity);
+				}
+				if (whatTile > 1.99f) {
+					Instantiate (floorPrefabThree, transform.position, Quaternion.identity);
+				}
+				myLifetime++;
+				transform.position += transform.forward * 5f;
+				counter++;
+				psi++;
+			}
+		}		
+		if (myLifetime >= 300f && psi >= 400) {
+			Destroy (gameObject);
+		}
+		if (Input.GetKeyDown(KeyCode.R)){
+			psi = 0;
+		}
 	}
 
 } // end of class scope
-
-// MORE STEPS BELOW!!!........
-
-
-
-
-// STEP 3: =====================================================================================
-// implement, test, and stabilize the system
-
-//	IMPLEMENT AND TEST:
-//	- save your scene!!! the code could potentially be infinite / exponential, and crash Unity
-//	- put Pathmaker.cs on a sphere, configure all the prefabs in the Inspector, and test it to make sure it works
-//	STABILIZE: 
-//	- code it so that all the Pathmakers can only spawn a grand total of 500 tiles in the entire world; how would you do that?
-//	- (hint: declare a "public static int" and have each Pathmaker check this "globalTileCount", somewhere in your code? if there are already enough tiles, then maybe the Pathmaker could Destroy my game object
-
-
-
-// STEP 4: ======================================================================================
-// tune your values...
-
-// a. how long should a pathmaker live? etc.
-// b. how would you tune the probabilities to generate lots of long hallways? does it work?
-// c. tweak all the probabilities that you want... what % chance is there for a pathmaker to make a pathmaker? is that too high or too low?
-
-
-
-// STEP 5: ===================================================================================
-// maybe randomize it even more?
-
-// - randomize 2 more variables in Pathmaker.cs for each different Pathmaker... you would do this in Start()
-// - maybe randomize each pathmaker's lifetime? maybe randomize the probability it will turn right? etc. if there's any number in your code, you can randomize it if you move it into a variable
-
-
-
-// STEP 6:  =====================================================================================
-// art pass, usability pass
-
-// - move the game camera to a position high in the world, and then point it down, so we can see your world get generated
-// - CHANGE THE DEFAULT UNITY COLORS, PLEASE, I'M BEGGING YOU
-// - add more detail to your original floorTile placeholder -- and let it randomly pick one of 3 different floorTile models, etc. so for example, it could randomly pick a "normal" floor tile, or a cactus, or a rock, or a skull
-//		- MODEL 3 DIFFERENT TILES IN MAYA! DON'T STOP USING MAYA OR YOU'LL FORGET IT ALL
-//		- add a simple in-game restart button; let us press [R] to reload the scene and see a new level generation
-// - with Text UI, name your proc generation system ("AwesomeGen", "RobertGen", etc.) and display Text UI that tells us we can press [R]
-
 
 
 // OPTIONAL EXTRA TASKS TO DO, IF YOU WANT: ===================================================
